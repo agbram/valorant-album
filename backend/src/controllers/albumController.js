@@ -1,6 +1,9 @@
 import prisma from "../db/prisma.js";
 
 export const AlbumController = {
+// Adiciona uma figurinha ao álbum do colecionador.
+// Se já existir, incrementa a quantidade (vira repetida).
+// Se não existir, cria com quantidade 1 (colada).
   async adicionar(req, res, next) {
     try {
       const { quantidade } = req.params;
@@ -25,7 +28,9 @@ export const AlbumController = {
       next(error);
     }
   },
-
+// Remove uma cópia repetida da figurinha do álbum.
+// Figurinhas coladas (quantidade === 1) não podem ser removidas.
+// Decrementa 1 da quantidade se houver repetidas.
   async remover(req, res, next) {
     try {
       const { figurinhaId } = req.params;
@@ -54,7 +59,9 @@ export const AlbumController = {
       next(error);
     }
   },
-
+// Lista as figurinhas do álbum com filtros opcionais.
+// Filtros: categoria e raridade (via tabela figurinha), status (colada/repetida).
+// Inclui os dados completos da figurinha em cada entrada.
   async listar(req, res, next) {
     try {
       const { categoria, raridade, status } = req.query;
@@ -82,7 +89,8 @@ export const AlbumController = {
       next(error);
     }
   },
-
+// Retorna as estatísticas de progresso do álbum.
+// Calcula: total no catálogo, coladas, faltando, repetidas e percentual de conclusão.
   async stats(req, res, next) {
     try {
       const totalCatalago = await prisma.figurinha.count();

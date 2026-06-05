@@ -251,6 +251,9 @@ const insertFigurinha = prisma.figurinha.createMany({
 }
 )
 
+// Popula o banco com os agentes do Valorant e entradas iniciais do álbum.
+// Limpa as tabelas antes de inserir para evitar duplicatas.
+// Album inicial: Waylay colada, Astra repetida, Sova colada, Vyse repetida.
 async function seed() {
   await prisma.album.deleteMany();
   await prisma.figurinha.deleteMany();

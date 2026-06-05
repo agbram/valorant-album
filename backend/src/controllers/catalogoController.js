@@ -1,6 +1,8 @@
 import prisma from "../db/prisma.js";
 
 export const CatalogoController = {
+// Cria uma nova figurinha no catálogo.
+// Nome e número são obrigatórios. Número deve ser único.
   async store(req, res, next) {
     try {
       const { numero, nome, categoria, raridade, imagem, descricao } = req.body;
@@ -30,6 +32,8 @@ export const CatalogoController = {
     }
   },
 
+// Lista figurinhas do catálogo com filtros opcionais.
+// Filtros combináveis: numero, categoria e raridade via query params.
   async index(req, res, next) {
     try {
       const { numero, categoria, raridade } = req.query;
@@ -51,7 +55,8 @@ export const CatalogoController = {
       next(error);
     }
   },
-
+// Atualiza os dados de uma figurinha existente pelo id.
+// Apenas os campos enviados no body são atualizados.
   async update(req, res, next) {
     try {
       const id = Number(req.params.id);
@@ -83,7 +88,8 @@ export const CatalogoController = {
       next(error);
     }
   },
-
+// Remove uma figurinha do catálogo pelo id.
+// Por cascade, remove também a entrada correspondente no álbum.
   async delete(req, res, next) {
     try {
       const id = Number(req.params.id);
