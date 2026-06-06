@@ -6,6 +6,7 @@ import Album from '../pages/Album';
 import Cadastro from '../pages/Cadastro';
 import Detalhes from '../pages/Detalhes';
 import Listagem from '../pages/Listagem';
+import Edicao from '../pages/Edicao';
 
 const dashboard = createRoute({
   getParentRoute: () => rootRoute,
@@ -27,7 +28,7 @@ const cadastro = createRoute({
 
 const detalhes = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/figurinhas/:id',
+  path: '/figurinhas/$id',
     component: Detalhes
 })
 
@@ -37,12 +38,19 @@ const listagem = createRoute({
     component: Listagem
 })
 
+const edicao = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/figurinhas/$id/editar',
+  component: Edicao,
+})
+
 const routeTree = rootRoute.addChildren([
   dashboard,
   listagem,
   album,
   cadastro,
-  detalhes
+  detalhes,
+  edicao
 ])
 const router = createRouter({
   routeTree

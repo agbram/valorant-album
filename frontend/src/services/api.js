@@ -23,3 +23,5 @@ export const adicionarColecao = (figurinhaId) => api.post(`/album/${figurinhaId}
 
 export const removerColecao = (figurinhaId) => api.delete(`/album/${figurinhaId}`);
 
+export const getFigurinhaPorId = (id) => api.get(`/catalogo/${id}`)
+

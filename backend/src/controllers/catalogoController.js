@@ -1,8 +1,8 @@
 import prisma from "../db/prisma.js";
 
 export const CatalogoController = {
-// Cria uma nova figurinha no catálogo.
-// Nome e número são obrigatórios. Número deve ser único.
+  // Cria uma nova figurinha no catálogo.
+  // Nome e número são obrigatórios. Número deve ser único.
   async store(req, res, next) {
     try {
       const { numero, nome, categoria, raridade, imagem, descricao } = req.body;
@@ -32,8 +32,8 @@ export const CatalogoController = {
     }
   },
 
-// Lista figurinhas do catálogo com filtros opcionais.
-// Filtros combináveis: numero, categoria e raridade via query params.
+  // Lista figurinhas do catálogo com filtros opcionais.
+  // Filtros combináveis: numero, categoria e raridade via query params.
   async index(req, res, next) {
     try {
       const { numero, categoria, raridade } = req.query;
@@ -55,8 +55,29 @@ export const CatalogoController = {
       next(error);
     }
   },
-// Atualiza os dados de uma figurinha existente pelo id.
-// Apenas os campos enviados no body são atualizados.
+
+  async show(req, res, next) {
+    try {
+      const id = Number(req.params.id);
+      const showFigurinha = await prisma.figurinha.findUnique({
+        where: { id },
+      });
+      if (!showFigurinha) {
+        return res.status(404).json({ error: "Figurinha não encontrada" });
+      } else {
+        return res.status(200).json(showFigurinha);
+      }
+    } catch(error){
+      next(error)
+    }
+
+    // pega o id do req.params
+    // busca com prisma.figurinha.findUnique
+    // se não encontrar retorna 404
+    // se encontrar retorna 200 com os dados
+  },
+  // Atualiza os dados de uma figurinha existente pelo id.
+  // Apenas os campos enviados no body são atualizados.
   async update(req, res, next) {
     try {
       const id = Number(req.params.id);
@@ -88,12 +109,12 @@ export const CatalogoController = {
       next(error);
     }
   },
-// Remove uma figurinha do catálogo pelo id.
-// Por cascade, remove também a entrada correspondente no álbum.
+  // Remove uma figurinha do catálogo pelo id.
+  // Por cascade, remove também a entrada correspondente no álbum.
   async delete(req, res, next) {
     try {
       const id = Number(req.params.id);
-        const figurinhaAtual = await prisma.figurinha.findUnique({
+      const figurinhaAtual = await prisma.figurinha.findUnique({
         where: { id },
       });
 
