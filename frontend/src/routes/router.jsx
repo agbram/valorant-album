@@ -1,12 +1,12 @@
 import { createRoute } from '@tanstack/react-router'
 import { createRouter } from '@tanstack/react-router';
 import { rootRoute } from './__root'
-import Dashboard from '../pages/Dashboard'
-import Album from '../pages/Album';
-import Cadastro from '../pages/Cadastro';
-import Detalhes from '../pages/Detalhes';
-import Listagem from '../pages/Listagem';
-import Edicao from '../pages/Edicao';
+import Dashboard from '../pages/Dashboard/Dashboard'
+import Album from '../pages/Album/Album';
+import Cadastro from '../pages/Cadastro/Cadastro';
+import Detalhes from '../pages/Detalhes/Detalhes';
+import Listagem from '../pages/Listagem/Listagem';
+import Edicao from '../pages/Edicao/Edicao';
 
 const dashboard = createRoute({
   getParentRoute: () => rootRoute,

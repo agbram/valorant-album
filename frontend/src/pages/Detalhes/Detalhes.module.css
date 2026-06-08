@@ -1,0 +1,149 @@
+.container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 0;
+  overflow: hidden;
+}
+
+.imagemContainer {
+  position: relative;
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imagem {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.nome {
+  font-size: 2rem;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  border-left: 4px solid var(--accent);
+  padding-left: 1rem;
+}
+
+.descricao {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+}
+
+.tagComum {
+  border-color: var(--comum);
+  color: var(--comum);
+}
+
+.tagRara {
+  border-color: var(--rara);
+  color: var(--rara);
+}
+
+.tagLendaria {
+  border-color: var(--lendaria);
+  color: var(--lendaria);
+}
+
+.quantidade {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.qtdLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+}
+
+.qtdValor {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 40px;
+  text-align: center;
+}
+
+.btnQtd {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  width: 36px;
+  height: 36px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btnQtd:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btnQtd:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.status {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid;
+}
+
+.statusFaltando {
+  color: var(--text-muted);
+  border-color: var(--text-muted);
+}
+
+.statusColada {
+  color: var(--comum);
+  border-color: var(--comum);
+}
+
+.statusRepetida {
+  color: var(--lendaria);
+  border-color: var(--lendaria);
+}
