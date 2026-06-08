@@ -28,15 +28,19 @@ export default function Listagem() {
   const [raridadeTemp, setRaridadeTemp] = useState("");
   const queryClient = useQueryClient();
 
+  // Hook do TanStack Query para buscar a lista de figurinhas, passando os filtros como parâmetros.
+  // Ao incluir "categoria" e "raridade" no array queryKey, o TanStack fará um refetch automático sempre que os filtros mudarem.
   const { data, isLoading, isError } = useQuery({
     queryKey: ["figurinhas", categoria, raridade],
     queryFn: () => getFigurinhas({ categoria, raridade }),
   });
 
+  // Mutação do TanStack Query para apagar uma figurinha do catálogo.
   const mutationApagarDoCatalogo = useMutation({
     mutationFn: (figurinhaId) => deleteFigurinhas(figurinhaId),
 
     onSuccess: () => {
+      // Quando a figurinha for apagada, limpa os caches para remover o item da listagem da interface.
       queryClient.invalidateQueries({ queryKey: ["album"] });
       queryClient.invalidateQueries({ queryKey: ["figurinhas"] });
     },

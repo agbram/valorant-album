@@ -28,7 +28,8 @@ export default function Editar() {
   const [raridade, setRaridade] = useState("");
   const [imagem, setImagem] = useState("");
 
-  // 3. Busca os dados da API apenas se estiver no modo Edição
+  // 3. Busca os dados da API apenas se estiver no modo Edição.
+  // O uso do "enabled: isEdicao" no useQuery do TanStack Query impede que a requisição seja feita ao abrir a tela de cadastro novo.
   const { data: figurinhaExistente } = useQuery({
     queryKey: ["figurinha", id],
     queryFn: () => getFigurinhaPorId(id),
@@ -47,20 +48,23 @@ export default function Editar() {
     }
   }, [figurinhaExistente, isEdicao]);
 
-  // Mutação para ADICIONAR nova figurinha
+  // Mutação do TanStack Query para ADICIONAR nova figurinha.
+  // Usado para enviar os novos dados para a API (via POST).
   const mutationAdicionar = useMutation({
     mutationFn: (data) => createFigurinhas(data),
     onSuccess: () => {
+      // Atualiza os dados no cache global para a lista de figurinhas, forçando a listagem a atualizar.
       queryClient.invalidateQueries({ queryKey: ["figurinhas"] });
       limparFormulario();
       alert("Figurinha cadastrada com sucesso!");
     },
   });
 
-  // 5. Mutação para ATUALIZAR figurinha existente
+  // 5. Mutação do TanStack Query para ATUALIZAR figurinha existente.
   const mutationEditar = useMutation({
     mutationFn: (data) => updateFigurinhas(id, data), // Certifique-se que sua api aceita (id, data)
     onSuccess: () => {
+      // Invalida a lista geral e o cache da figurinha específica editada.
       queryClient.invalidateQueries({ queryKey: ["figurinhas"] });
       queryClient.invalidateQueries({ queryKey: ["figurinha", id] });
       alert("Figurinha atualizada com sucesso!");
@@ -76,7 +80,7 @@ export default function Editar() {
     setImagem("");
   };
 
-  // 6. Trata a submissão de forma dinâmica baseada no modo da tela
+  // 6. Trata a submissão de forma dinâmica baseada no modo da tela, chamando a mutação adequada.
   const handleSubmit = (e) => {
     e.preventDefault();
 

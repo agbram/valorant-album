@@ -4,6 +4,8 @@ import styles from './Dashboard.module.css'
 
 export default function Dashboard(){
 
+    // Hook do TanStack Query para buscar os dados estatísticos do álbum.
+    // Ele gerencia automaticamente os estados de carregamento (isLoading) e erro (isError).
     const {data, isLoading, isError } = useQuery({
         queryKey: ['stats'],
         queryFn: () => getStats()

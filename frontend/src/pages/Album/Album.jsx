@@ -6,6 +6,8 @@ import { useNavigate } from "@tanstack/react-router";
 
 export default function Album() {
   const navigate = useNavigate();
+  // Hook do TanStack Query para buscar a lista de todas as figurinhas.
+  // O queryKey serve como um identificador único para fazer o cache desses dados.
   const { data, isLoading, isError } = useQuery({
     queryKey: ["figurinhas"],
     queryFn: () => getFigurinhas(),
@@ -13,6 +15,7 @@ export default function Album() {
   const [status, setStatus] = useState("");
   const [categoria, setCategoria] = useState("");
 
+  // Hook do TanStack Query para buscar os dados do álbum do usuário (quais ele possui e a quantidade).
   const { data: albumData } = useQuery({
     queryKey: ["album"],
     queryFn: () => getAlbum(),
@@ -20,6 +23,7 @@ export default function Album() {
   const figurinhas = data?.data ?? [];
   const album = albumData?.data ?? [];
 
+  // Função que filtra as figurinhas de acordo com o status e a categoria selecionados na tela.
   const figurinhasFiltradas = figurinhas.filter((figurinha) => {
     const entradaAlbum = album.find((a) => a.figurinhaId === figurinha.id);
     const quantidade = entradaAlbum?.quantidade ?? 0;
@@ -33,12 +37,15 @@ export default function Album() {
     return true;
   });
 
+  // Objeto que agrupa as figurinhas filtradas por suas respectivas categorias (ex: Duelista, Controlador, etc).
   const porCategoria = {};
   figurinhasFiltradas.forEach((figurinha) => {
     const cat = figurinha.categoria;
     if (!porCategoria[cat]) porCategoria[cat] = [];
     porCategoria[cat].push(figurinha);
   });
+
+  const adquirido = () => {};
 
   return (
     <div className={styles.container}>
@@ -76,6 +83,7 @@ export default function Album() {
                 (a) => a.figurinhaId === figurinha.id,
               );
               const quantidade = entradaAlbum?.quantidade ?? 0;
+              const estaFaltando = quantidade === 0;
 
               const raridadeClass =
                 figurinha.raridade === "Comum"
@@ -87,12 +95,13 @@ export default function Album() {
               return (
                 <div
                   key={figurinha.id}
-                  className={`${styles.card} ${raridadeClass}`}
+                  className={`${styles.card} ${raridadeClass} ${estaFaltando ? styles.cardDesabilitado : ""}`}
                   onClick={() =>
+                    !estaFaltando &&
                     navigate({ to: `/figurinhas/${figurinha.id}` })
                   }
                 >
-                  {quantidade === 0 ? (
+                  {estaFaltando ? (
                     <>
                       <div className={styles.placeholder}>?</div>
                       <p className={styles.nomeFaltando}>{figurinha.nome}</p>

@@ -6,11 +6,14 @@ import styles from "./Pacote.module.css";
 
 export default function Pacote() {
   const queryClient = useQueryClient();
+  
+  // Hook do TanStack Query para buscar todas as figurinhas possíveis para o sorteio do pacote.
   const { data } = useQuery({
     queryKey: ["pacote"],
     queryFn: () => getFigurinhas(),
   });
 
+  // Hook do TanStack Query para buscar o álbum do usuário e saber quais figurinhas ele já possui.
   const { data: albumData } = useQuery({
     queryKey: ["album"],
     queryFn: () => getAlbum(),
@@ -27,6 +30,8 @@ export default function Pacote() {
 
   const figurinhas = data?.data ?? [];
   const album = albumData?.data ?? [];
+  
+  // Função que realiza o sorteio aleatório de uma figurinha baseada nas probabilidades de cada raridade.
   const sortear = () => {
     const numero = Math.random(); // gera entre 0 e 1
 
@@ -45,10 +50,12 @@ export default function Pacote() {
     return candidatas[indice];
   };
 
+  // Mutação do TanStack Query para adicionar a figurinha sorteada na coleção do usuário através da API.
   const mutationAdicionar = useMutation({
     mutationFn: (figurinhaId) => adicionarColecao(figurinhaId),
 
     onSuccess: () => {
+      // Invalida as queries antigas para baixar novamente os dados mais recentes do álbum.
       queryClient.invalidateQueries({ queryKey: ["album"] });
       queryClient.invalidateQueries({ queryKey: ["figurinhas"] });
       setTimeout(() => {
@@ -61,6 +68,7 @@ export default function Pacote() {
     ? new Date(Number(ultima) + 24 * 60 * 60 * 1000).toLocaleString("pt-BR")
     : null;
 
+  // Função responsável por verificar as regras de abertura do pacote (ex: tempo), fazer o sorteio e chamar a mutação de adição.
   const abrirPacote = () => {
     if (!podeAbrir) return;
 
