@@ -16,12 +16,11 @@ import {
   getSortedRowModel,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import styles from "./Listagem.module.css";
 
 export default function Listagem() {
-  const navigate = useNavigate();
   const [sorting, setSorting] = useState([]);
   const [categoria, setCategoria] = useState("");
   const [raridade, setRaridade] = useState("");
@@ -176,8 +175,6 @@ export default function Listagem() {
           {table.getRowModel().rows.map((linha) => (
 <tr 
   key={linha.id} 
-  onClick={() => navigate({ to: `/figurinhas/${linha.original.id}`})}
-  style={{ cursor: 'pointer' }}
 >
               {linha.getVisibleCells().map((celula) => (
                 <td key={celula.id}>
