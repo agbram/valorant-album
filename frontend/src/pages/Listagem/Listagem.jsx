@@ -6,7 +6,6 @@ import {
 } from "@tanstack/react-query";
 import {
   deleteFigurinhas,
-  getAlbum,
   getFigurinhas,
   updateFigurinhas,
 } from "../../services/api";
@@ -26,7 +25,6 @@ export default function Listagem() {
   const [sorting, setSorting] = useState([]);
   const [categoria, setCategoria] = useState("");
   const [raridade, setRaridade] = useState("");
-  const [quantidade, setQuantidade] = useState("");
   const [categoriaTemp, setCategoriaTemp] = useState("");
   const [raridadeTemp, setRaridadeTemp] = useState("");
   const queryClient = useQueryClient();
@@ -34,11 +32,6 @@ export default function Listagem() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["figurinhas", categoria, raridade],
     queryFn: () => getFigurinhas({ categoria, raridade }),
-  });
-
-  const { data: albumData } = useQuery({
-    queryKey: ["album", quantidade],
-    queryFn: () => getAlbum({ quantidade }),
   });
 
   const mutationApagarDoCatalogo = useMutation({
@@ -69,9 +62,6 @@ export default function Listagem() {
       id: "acoes",
       header: "Ações",
       cell: ({ row }) => {
-        const entradaAlbum = albumData?.data?.find(
-          (a) => a.figurinhaId === row.original.id,
-        );
         return (
           <div className={styles.acoes}>
             <Link

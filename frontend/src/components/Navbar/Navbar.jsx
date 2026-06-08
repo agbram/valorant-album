@@ -13,6 +13,7 @@ const navigate = useNavigate()
   <Link to="/" className={styles.link}>Dashboard</Link>
   <Link to="/album" className={styles.link}>Álbum</Link>
   <Link to="/figurinhas" className={styles.link}>Figurinhas</Link>
+  <Link to="/pacote" className={styles.link}>Abrir pacote</Link>
   <Link to="/figurinhas/nova" className={styles.btnNova}>Figurinha nova</Link>
 </nav>
       </div>
