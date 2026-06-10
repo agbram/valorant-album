@@ -244,12 +244,7 @@ const figurinhas = [
   }
 ];
 
-const insertFigurinha = prisma.figurinha.createMany({
-  data: {
-    figurinhas
-  }
-}
-)
+
 
 // Popula o banco com os agentes do Valorant e entradas iniciais do álbum.
 // Limpa as tabelas antes de inserir para evitar duplicatas.
@@ -257,7 +252,11 @@ const insertFigurinha = prisma.figurinha.createMany({
 async function seed() {
   await prisma.album.deleteMany();
   await prisma.figurinha.deleteMany();
-  await prisma.figurinha.createMany({data: figurinhas})
+  const data: any = {
+    data: figurinhas,
+    skipDuplicates: true,
+  };
+  await prisma.figurinha.createMany(data);
   await prisma.album.createMany({
     data: [
       {figurinhaId: 6, quantidade: 1},

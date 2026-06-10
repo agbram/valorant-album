@@ -15,13 +15,16 @@ import {
   flexRender,
   getSortedRowModel,
   getPaginationRowModel,
+  SortingState,
 } from "@tanstack/react-table";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import styles from "./Listagem.module.css";
+import { Row } from "@tanstack/react-table";
+import { Figurinha } from "../../types";
 
 export default function Listagem() {
-  const [sorting, setSorting] = useState([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [categoria, setCategoria] = useState("");
   const [raridade, setRaridade] = useState("");
   const [categoriaTemp, setCategoriaTemp] = useState("");
@@ -36,8 +39,8 @@ export default function Listagem() {
   });
 
   // Mutação do TanStack Query para apagar uma figurinha do catálogo.
-  const mutationApagarDoCatalogo = useMutation({
-    mutationFn: (figurinhaId) => deleteFigurinhas(figurinhaId),
+  const mutationApagarDoCatalogo = useMutation<unknown, Error, number>({
+    mutationFn: (figurinhaId: number) => deleteFigurinhas(figurinhaId),
 
     onSuccess: () => {
       // Quando a figurinha for apagada, limpa os caches para remover o item da listagem da interface.
@@ -51,7 +54,7 @@ export default function Listagem() {
     {
       accessorKey: "imagem",
       header: "Imagem",
-      cell: ({ row }) => (
+      cell: ({ row }: { row: Row<Figurinha> }) => (
         <img
           src={row.original.imagem}
           alt={row.original.nome}
@@ -64,7 +67,7 @@ export default function Listagem() {
     {
       id: "acoes",
       header: "Ações",
-      cell: ({ row }) => {
+      cell: ({ row }: { row: Row<Figurinha> }) => {
         return (
           <div className={styles.acoes}>
             <Link
@@ -166,10 +169,11 @@ export default function Listagem() {
                     header.column.columnDef.header,
                     header.getContext(),
                   )}
-                  {{
-                    asc: " 🔼",
-                    desc: " 🔽",
-                  }[header.column.getIsSorted()] ?? null}
+                  {header.column.getIsSorted() === "asc"
+                    ? " 🔼"
+                    : header.column.getIsSorted() === "desc"
+                      ? " 🔽"
+                      : null}
                 </th>
               ))}
             </tr>
@@ -177,9 +181,7 @@ export default function Listagem() {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((linha) => (
-<tr 
-  key={linha.id} 
->
+            <tr key={linha.id}>
               {linha.getVisibleCells().map((celula) => (
                 <td key={celula.id}>
                   {flexRender(

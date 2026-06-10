@@ -27,7 +27,7 @@ model Figurinha {
   categoria Categoria
   raridade  Raridade
   imagem    String
-  descricao String
+  descricao String?
   Album     Album?
 
   @@map("figurinha")

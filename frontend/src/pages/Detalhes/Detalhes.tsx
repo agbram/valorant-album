@@ -7,6 +7,15 @@ import {
   removerColecao,
 } from "../../services/api";
 import styles from "./Detalhes.module.css";
+import { EntradaAlbum } from "../../types";
+
+type AlbumResponse = {
+  data: EntradaAlbum[];
+};
+
+type MutationContext = {
+  albumAnterior: AlbumResponse | undefined;
+};
 
 const routeApi = getRouteApi("/figurinhas/$id");
 export default function Detalhes() {
@@ -31,8 +40,13 @@ export default function Detalhes() {
   );
 
   // Mutação do TanStack Query para adicionar mais uma cópia dessa figurinha na coleção do usuário.
-  const mutationAdicionar = useMutation({
-    mutationFn: (figurinhaId) => adicionarColecao(figurinhaId),
+  const mutationAdicionar = useMutation<
+    unknown,
+    Error,
+    number,
+    MutationContext
+  >({
+    mutationFn: (figurinhaId: number) => adicionarColecao(figurinhaId),
 
     // 1. Ocorre IMEDIATAMENTE ao clicar no botão
     onMutate: async (figurinhaId) => {
@@ -40,43 +54,50 @@ export default function Detalhes() {
       await queryClient.cancelQueries({ queryKey: ["album", id] });
 
       // Guardar o estado ATUAL do cache (antes da modificação) para podermos fazer o rollback se der erro
-      const albumAnterior = queryClient.getQueryData(["album", id]);
+      const albumAnterior = queryClient.getQueryData<AlbumResponse>([
+        "album",
+        id,
+      ]);
 
       // Atualizar o cache manualmente de forma otimista (exemplo: somando +1 na quantidade)
       // DICA: Você precisará olhar como é o formato dos dados que a sua API retorna (se é um array, um objeto, etc)
       // e retornar esse mesmo formato alterado.
-      queryClient.setQueryData(["album", id], (dadosAntigos) => {
-        // Se por algum motivo o cache estiver vazio, não fazemos nada
-        if (!dadosAntigos || !dadosAntigos.data) return dadosAntigos;
+      queryClient.setQueryData(
+        ["album", id],
+        (dadosAntigos: AlbumResponse | undefined) => {
+          // Se por algum motivo o cache estiver vazio, não fazemos nada
+          if (!dadosAntigos || !dadosAntigos.data) return dadosAntigos;
 
-        // 1. Clonamos o array antigo de figurinhas do álbum
-        const novaListaDeAlbuns = [...dadosAntigos.data];
+          // 1. Clonamos o array antigo de figurinhas do álbum
+          const novaListaDeAlbuns = [...dadosAntigos.data];
 
-        // 2. Procuramos se a figurinha já existe no álbum
-        const index = novaListaDeAlbuns.findIndex(
-          (a) => a.figurinhaId === Number(figurinhaId),
-        );
+          // 2. Procuramos se a figurinha já existe no álbum
+          const index = novaListaDeAlbuns.findIndex(
+            (a) => a.figurinhaId === Number(figurinhaId),
+          );
 
-        if (index !== -1) {
-          // Se ela já existe, pegamos a figurinha atual e somamos +1 na quantidade
-          novaListaDeAlbuns[index] = {
-            ...novaListaDeAlbuns[index],
-            quantidade: novaListaDeAlbuns[index].quantidade + 1,
+          if (index !== -1) {
+            // Se ela já existe, pegamos a figurinha atual e somamos +1 na quantidade
+            novaListaDeAlbuns[index] = {
+              ...novaListaDeAlbuns[index],
+              quantidade: novaListaDeAlbuns[index].quantidade + 1,
+            };
+          } else {
+            // Se ela não existe (faltando), nós simulamos a criação dela com quantidade 1
+            novaListaDeAlbuns.push({
+              id: 0, // temporário, será substituído pelo onSettled
+              figurinhaId: Number(figurinhaId),
+              quantidade: 1,
+            });
+          }
+
+          // 3. Retornamos o formato original da API do Axios (objeto contendo .data)
+          return {
+            ...dadosAntigos,
+            data: novaListaDeAlbuns,
           };
-        } else {
-          // Se ela não existe (faltando), nós simulamos a criação dela com quantidade 1
-          novaListaDeAlbuns.push({
-            figurinhaId: Number(figurinhaId),
-            quantidade: 1,
-          });
-        }
-
-        // 3. Retornamos o formato original da API do Axios (objeto contendo .data)
-        return {
-          ...dadosAntigos,
-          data: novaListaDeAlbuns,
-        };
-      });
+        },
+      );
 
       // Retornar os dados antigos. Eles serão passados para a função onError caso a requisição falhe.
       return { albumAnterior };
@@ -85,9 +106,11 @@ export default function Detalhes() {
     // 2. Ocorre SOMENTE se a API retornar erro (ex: 500, 400 ou sem internet)
     onError: (err, figurinhaId, context) => {
       // Desfazer a ação otimista, voltando para o valor que salvamos no "onMutate"
-      queryClient.setQueryData(["album", id], context.albumAnterior);
-      alert("Falhou");
-      // Opcional: mostrar um toast/alert avisando o usuário que falhou
+      if (context?.albumAnterior) {
+        queryClient.setQueryData(["album", id], context.albumAnterior);
+        alert("Falhou");
+        // Opcional: mostrar um toast/alert avisando o usuário que falhou
+      }
     },
 
     // 3. Ocorre SEMPRE no final (dando sucesso ou erro)
@@ -98,62 +121,70 @@ export default function Detalhes() {
     },
   });
 
-// Mutação otimista para remover uma cópia da figurinha da coleção.
-// Se tiver repetidas (quantidade > 1), decrementa. Se for a última (quantidade = 1), remove do álbum.
-const mutationRemover = useMutation({
-  mutationFn: (figurinhaId) => removerColecao(figurinhaId),
+  // Mutação otimista para remover uma cópia da figurinha da coleção.
+  // Se tiver repetidas (quantidade > 1), decrementa. Se for a última (quantidade = 1), remove do álbum.
+  const mutationRemover = useMutation<unknown, Error, number, MutationContext>({
+    mutationFn: (figurinhaId: number) => removerColecao(figurinhaId),
 
-  // 1. Ocorre IMEDIATAMENTE ao clicar no botão
-  onMutate: async (figurinhaId) => {
-    // Cancela refetches em andamento para não sobrescrever a atualização otimista
-    await queryClient.cancelQueries({ queryKey: ["album", id] });
+    // 1. Ocorre IMEDIATAMENTE ao clicar no botão
+    onMutate: async (figurinhaId) => {
+      // Cancela refetches em andamento para não sobrescrever a atualização otimista
+      await queryClient.cancelQueries({ queryKey: ["album", id] });
 
-    // Salva o estado atual do cache para rollback em caso de erro
-    const albumAnterior = queryClient.getQueryData(["album", id]);
+      // Salva o estado atual do cache para rollback em caso de erro
+      const albumAnterior = queryClient.getQueryData<AlbumResponse>([
+        "album",
+        id,
+      ]);
 
-    queryClient.setQueryData(["album", id], (dadosAntigos) => {
-      if (!dadosAntigos || !dadosAntigos.data) return dadosAntigos;
+      queryClient.setQueryData(
+        ["album", id],
+        (dadosAntigos: AlbumResponse | undefined) => {
+          if (!dadosAntigos || !dadosAntigos.data) return dadosAntigos;
 
-      // Clona o array atual do álbum
-      const novaListaDeAlbuns = [...dadosAntigos.data];
+          // Clona o array atual do álbum
+          const novaListaDeAlbuns = [...dadosAntigos.data];
 
-      // Busca o índice da figurinha no álbum
-      const index = novaListaDeAlbuns.findIndex(
-        (a) => a.figurinhaId === Number(figurinhaId),
+          // Busca o índice da figurinha no álbum
+          const index = novaListaDeAlbuns.findIndex(
+            (a) => a.figurinhaId === Number(figurinhaId),
+          );
+
+          if (index !== -1) {
+            if (novaListaDeAlbuns[index].quantidade > 1) {
+              // Tem repetidas — decrementa 1
+              novaListaDeAlbuns[index] = {
+                ...novaListaDeAlbuns[index],
+                quantidade: novaListaDeAlbuns[index].quantidade - 1,
+              };
+            } else {
+              // Era a última cópia — remove a entrada do álbum
+              novaListaDeAlbuns.splice(index, 1);
+            }
+          }
+
+          // Retorna o novo estado no formato da API
+          return { ...dadosAntigos, data: novaListaDeAlbuns };
+        },
       );
 
-      if (index !== -1) {
-        if (novaListaDeAlbuns[index].quantidade > 1) {
-          // Tem repetidas — decrementa 1
-          novaListaDeAlbuns[index] = {
-            ...novaListaDeAlbuns[index],
-            quantidade: novaListaDeAlbuns[index].quantidade - 1,
-          };
-        } else {
-          // Era a última cópia — remove a entrada do álbum
-          novaListaDeAlbuns.splice(index, 1);
-        }
+      return { albumAnterior };
+    },
+
+    // 2. Ocorre SOMENTE se a API retornar erro — desfaz a ação otimista
+    onError: (err, figurinhaId, context) => {
+      if (context?.albumAnterior) {
+        queryClient.setQueryData(["album", id], context.albumAnterior);
+        alert("Falhou");
       }
+    },
 
-      // Retorna o novo estado no formato da API
-      return { ...dadosAntigos, data: novaListaDeAlbuns };
-    });
-
-    return { albumAnterior };
-  },
-
-  // 2. Ocorre SOMENTE se a API retornar erro — desfaz a ação otimista
-  onError: (err, figurinhaId, context) => {
-    queryClient.setQueryData(["album", id], context.albumAnterior);
-    alert("Falhou");
-  },
-
-  // 3. Ocorre SEMPRE no final — sincroniza com o banco independente do resultado
-  onSettled: () => {
-    queryClient.invalidateQueries({ queryKey: ["album"] });
-    queryClient.invalidateQueries({ queryKey: ["figurinhas"] });
-  },
-});
+    // 3. Ocorre SEMPRE no final — sincroniza com o banco independente do resultado
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["album"] });
+      queryClient.invalidateQueries({ queryKey: ["figurinhas"] });
+    },
+  });
 
   if (!figurinha) return <p>Carregando...</p>;
 

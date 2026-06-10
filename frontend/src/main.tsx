@@ -6,12 +6,13 @@ import {
   QueryClientProvider,
   useQuery,
 } from '@tanstack/react-query'
-import { RouterProvider } from '@tanstack/react-router'
-import router from './routes/router.jsx'
+import { createRouter, RouterProvider } from '@tanstack/react-router'
+import { routeTree } from './routeTree.gen'
 
 const queryClient = new QueryClient()
+const router = createRouter({ routeTree })
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
     <RouterProvider router={router}/>
     </QueryClientProvider>

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adicionarColecao, getAlbum } from "../../services/api";
 import styles from "./Pacote.module.css";
+import { Figurinha } from '../../types'
 
 export default function Pacote() {
   const queryClient = useQueryClient();
@@ -19,7 +20,7 @@ export default function Pacote() {
     queryFn: () => getAlbum(),
   });
 
-  const [figurinhaSorteada, setFigurinhaSorteada] = useState("");
+const [figurinhaSorteada, setFigurinhaSorteada] = useState<Figurinha | null>(null)
   const [podeAbrir, setPodeAbrir] = useState(() => {
     const ultima = localStorage.getItem("ultimaAbertura");
     if (!ultima) return true;
@@ -51,8 +52,8 @@ export default function Pacote() {
   };
 
   // Mutação do TanStack Query para adicionar a figurinha sorteada na coleção do usuário através da API.
-  const mutationAdicionar = useMutation({
-    mutationFn: (figurinhaId) => adicionarColecao(figurinhaId),
+const mutationAdicionar = useMutation<unknown, Error, number>({
+  mutationFn: (figurinhaId: number) => adicionarColecao(figurinhaId),
 
     onSuccess: () => {
       // Invalida as queries antigas para baixar novamente os dados mais recentes do álbum.
@@ -72,11 +73,11 @@ export default function Pacote() {
   const abrirPacote = () => {
     if (!podeAbrir) return;
 
-    localStorage.setItem("ultimaAbertura", new Date().getTime());
+    localStorage.setItem("ultimaAbertura", new Date().getTime().toString());
     setPodeAbrir(false);
 
     const figurinha = sortear();
-    const entradaAntes = album.find((a) => a.figurinhaId === figurinha.id);
+    const entradaAntes = album.find((a) => a.figurinhaId === figurinha.id)
     setFigurinhaSorteada(figurinha);
     setMensagem(
       entradaAntes

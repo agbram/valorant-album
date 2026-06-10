@@ -1,15 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFigurinhas } from "../../services/api";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import styles from "./Cadastro.module.css";
+import { CriarFigurinhaPayload } from "../../types";
 
 export default function Cadastro() {
   const queryClient = useQueryClient();
 
   // Hook do TanStack Query para realizar a criação de uma nova figurinha.
   // O useMutation é utilizado para operações que alteram dados na API (POST, PUT, DELETE).
-  const mutationAdicionar = useMutation({
-    mutationFn: (data) => createFigurinhas(data),
+  const mutationAdicionar = useMutation<unknown, Error, CriarFigurinhaPayload>({
+    mutationFn: (data: CriarFigurinhaPayload) => createFigurinhas(data),
     onSuccess: () => {
       // Quando a mutação tem sucesso, invalidamos a query "figurinhas" para forçar uma nova busca e atualizar a lista.
       queryClient.invalidateQueries({ queryKey: ["figurinhas"] });
@@ -31,7 +32,7 @@ export default function Cadastro() {
   const [imagem, setImagem] = useState("");
 
   // Função que é chamada ao enviar o formulário, acionando a mutação do TanStack para salvar os dados no backend.
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
     mutationAdicionar.mutate({

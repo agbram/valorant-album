@@ -4,9 +4,10 @@ import {
   updateFigurinhas,
   getFigurinhaPorId,
 } from "../../services/api"; // Importe seus métodos de API aqui
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { getRouteApi } from "@tanstack/react-router";
 import styles from "./Edicao.module.css";
+import { CriarFigurinhaPayload } from "../../types";
 
 const routeApi = getRouteApi("/figurinhas/$id/editar");
 
@@ -50,8 +51,8 @@ export default function Editar() {
 
   // Mutação do TanStack Query para ADICIONAR nova figurinha.
   // Usado para enviar os novos dados para a API (via POST).
-  const mutationAdicionar = useMutation({
-    mutationFn: (data) => createFigurinhas(data),
+const mutationAdicionar = useMutation<unknown, Error, CriarFigurinhaPayload>({
+  mutationFn: (data: CriarFigurinhaPayload) => createFigurinhas(data),
     onSuccess: () => {
       // Atualiza os dados no cache global para a lista de figurinhas, forçando a listagem a atualizar.
       queryClient.invalidateQueries({ queryKey: ["figurinhas"] });
@@ -61,8 +62,8 @@ export default function Editar() {
   });
 
   // 5. Mutação do TanStack Query para ATUALIZAR figurinha existente.
-  const mutationEditar = useMutation({
-    mutationFn: (data) => updateFigurinhas(id, data), // Certifique-se que sua api aceita (id, data)
+const mutationEditar = useMutation<unknown, Error, Partial<CriarFigurinhaPayload>>({
+  mutationFn: (data: Partial<CriarFigurinhaPayload>) => updateFigurinhas(id, data), // Certifique-se que sua api aceita (id, data)
     onSuccess: () => {
       // Invalida a lista geral e o cache da figurinha específica editada.
       queryClient.invalidateQueries({ queryKey: ["figurinhas"] });
@@ -81,7 +82,7 @@ export default function Editar() {
   };
 
   // 6. Trata a submissão de forma dinâmica baseada no modo da tela, chamando a mutação adequada.
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
     const dadosFormulario = {
