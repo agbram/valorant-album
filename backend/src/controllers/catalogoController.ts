@@ -2,19 +2,45 @@ import prisma from "../db/prisma.js";
 import type { Request, Response, NextFunction } from 'express';
 import type { CriarFigurinhaBody, FiltrosCatalogo } from "../types/index.js";
 import { Prisma } from "@prisma/client";
+import { z } from "zod";
+
+// Schema do Zod que define as regras de validação para criação de figurinha.
+// Funciona como um "goleiro" — barra qualquer dado inválido antes de chegar no banco.
+const criarFigurinhaSchema = z.object({
+  // Nome não pode ser vazio
+  nome: z.string().min(1, "Nome é obrigatório"),
+  // Número deve ser inteiro e positivo — impede números negativos ou decimais
+  numero: z.number().int().positive("Número deve ser positivo"),
+  // Apenas categorias válidas do jogo são aceitas — qualquer outro valor é rejeitado
+  categoria: z.enum(["Duelista", "Controlador", "Sentinela", "Iniciador"]),
+  // Apenas raridades válidas são aceitas
+  raridade: z.enum(["Comum", "Rara", "Lendaria"]),
+  // Imagem deve ser uma URL válida — impede strings soltas como "minha-foto"
+  imagem: z.string().url("Deve ser uma URL válida"),
+  // Descrição é opcional
+  descricao: z.string().optional()
+});
+
+// Versão parcial do schema para atualização — todos os campos se tornam opcionais.
+// Permite atualizar só o nome sem precisar enviar todos os outros campos.
+const atualizarFigurinhaSchema = criarFigurinhaSchema.partial();
+
 
 export const CatalogoController = {
   // Cria uma nova figurinha no catálogo.
   // Nome e número são obrigatórios. Número deve ser único.
   async store(req: Request, res: Response, next: NextFunction) {
     try {
+// safeParse valida o body sem lançar exceção.
+// Se inválido, retorna success: false com os erros detalhados.
+// Se válido, retorna success: true com os dados já tipados e limpos.
+const validacao = criarFigurinhaSchema.safeParse(req.body);
 
-    const body = req.body as CriarFigurinhaBody
-      if (!body.nome || !body.numero) {
-        return res
-          .status(400)
-          .json({ error: "Nome e número são obrigatórios!" });
+      if (!validacao.success) {
+        return res.status(400).json({ error: "Dados inválidos", detalhes: validacao.error.format() });
       }
+
+      const body = validacao.data;
 
       const figurinhaNova = await prisma.figurinha.create({
         data: {
@@ -88,8 +114,13 @@ export const CatalogoController = {
         return res.status(404).json({ error: "Figurinha não encontrada" })
       }
 
-      const body = req.body as Partial<CriarFigurinhaBody>
-      const data: any = {}
+      const validacao = atualizarFigurinhaSchema.safeParse(req.body);
+      if (!validacao.success) {
+        return res.status(400).json({ error: "Dados inválidos", detalhes: validacao.error.format() });
+      }
+
+      const body = validacao.data;
+      let data: Prisma.FigurinhaUpdateInput = {};
 
       if (body.nome) data.nome = body.nome
       if (body.categoria) data.categoria = body.categoria

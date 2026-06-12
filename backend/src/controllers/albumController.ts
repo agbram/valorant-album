@@ -14,7 +14,7 @@ export const AlbumController = {
       const novaFigurinha = await prisma.album.upsert({
         where: { figurinhaId },
         update: { quantidade: { increment: 1 } },
-        create: { figurinhaId, quantidade: 1 },
+        create: { figurinhaId, quantidade: 1},
       })
 
       res.status(200).json(novaFigurinha)

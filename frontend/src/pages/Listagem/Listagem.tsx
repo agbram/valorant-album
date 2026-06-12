@@ -110,6 +110,7 @@ export default function Listagem() {
         <label>Categoria:</label>
         <select
           className={styles.select}
+          value={categoriaTemp}
           onChange={(e) => setCategoriaTemp(e.target.value)}
         >
           <option value="">Todas</option>
@@ -122,6 +123,7 @@ export default function Listagem() {
         <label>Raridade:</label>
         <select
           className={styles.select}
+          value={raridadeTemp}
           onChange={(e) => setRaridadeTemp(e.target.value)}
         >
           <option value="">Todas</option>
@@ -145,13 +147,27 @@ export default function Listagem() {
         {categoria && (
           <span className={styles.badge}>
             Categoria: {categoria}{" "}
-            <button onClick={() => setCategoria("")}>✕</button>
+            <button
+              onClick={() => {
+                setCategoria("");
+                setCategoriaTemp("");
+              }}
+            >
+              ✕
+            </button>
           </span>
         )}
         {raridade && (
           <span className={styles.badge}>
             Raridade: {raridade}{" "}
-            <button onClick={() => setRaridade("")}>✕</button>
+            <button
+              onClick={() => {
+                setRaridade("");
+                setRaridadeTemp("");
+              }}
+            >
+              ✕
+            </button>
           </span>
         )}
       </div>

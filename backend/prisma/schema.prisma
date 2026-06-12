@@ -37,7 +37,6 @@ model Album {
   id          Int @id @default(autoincrement())
   figurinhaId Int @unique
   quantidade  Int @default(1)
-
   figurinha Figurinha @relation(fields: [figurinhaId], references: [id], onDelete: Cascade)
 
   @@map("album")

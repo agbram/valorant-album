@@ -1,7 +1,6 @@
 import 'dotenv/config'
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-
 const figurinhas = [
   // Duelistas
   {
@@ -252,10 +251,12 @@ const figurinhas = [
 async function seed() {
   await prisma.album.deleteMany();
   await prisma.figurinha.deleteMany();
+
   const data: any = {
     data: figurinhas,
     skipDuplicates: true,
   };
+
   await prisma.figurinha.createMany(data);
   await prisma.album.createMany({
     data: [

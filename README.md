@@ -179,9 +179,14 @@ A figurinha sorteada é adicionada automaticamente ao álbum, com feedback indic
 
 ---
 
-## Desafios opcionais
-
-Nenhum dos desafios opcionais foi implementado nesta versão.
+**🛡️ Desafio Goleiro: Validação de Dados**
+Implementado com sucesso utilizando a biblioteca **Zod**. As rotas de criação (`POST /catalogo`) e edição (`PUT /catalogo/:id`) contam com uma camada de validação rigorosa no backend que:
+- Exige a presença de todos os campos obrigatórios (nome, número, categoria, etc).
+- Garante que os tipos estão corretos (ex: impede o envio de um texto no lugar do número da figurinha).
+- Valida se o link enviado é realmente uma URL válida.
+- Impede a criação de figurinhas com número negativo.
+- Bloqueia categorias e raridades que não existam no jogo.
+- Limpa dados extras não solicitados enviados por engano ou má fé no payload (comportamento padrão do `.safeParse`).
 
 ---
 
