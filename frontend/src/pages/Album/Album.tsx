@@ -3,12 +3,13 @@ import { getFigurinhas, getAlbum } from "../../services/api";
 import styles from "./Album.module.css";
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { Figurinha } from "../../types";
 
 export default function Album() {
   const navigate = useNavigate();
   // Hook do TanStack Query para buscar a lista de todas as figurinhas.
   // O queryKey serve como um identificador único para fazer o cache desses dados.
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery<{ data: Figurinha[] }>({
     queryKey: ["figurinhas"],
     queryFn: () => getFigurinhas(),
   });
@@ -38,7 +39,8 @@ export default function Album() {
   });
 
   // Objeto que agrupa as figurinhas filtradas por suas respectivas categorias (ex: Duelista, Controlador, etc).
-  const porCategoria = {};
+  const porCategoria: Record<string, Figurinha[]> = {};
+
   figurinhasFiltradas.forEach((figurinha) => {
     const cat = figurinha.categoria;
     if (!porCategoria[cat]) porCategoria[cat] = [];

@@ -15,7 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as FigurinhasIndexRouteImport } from './routes/figurinhas/index'
 import { Route as FigurinhasNovaRouteImport } from './routes/figurinhas/nova'
 import { Route as FigurinhasIdRouteImport } from './routes/figurinhas/$id'
-import { Route as FigurinhasIdEditarRouteImport } from './routes/figurinhas/$id.editar'
+import { Route as FigurinhasIdEditarRouteImport } from './routes/figurinhas/$id_.editar'
 
 const PacoteRoute = PacoteRouteImport.update({
   id: '/pacote',
@@ -48,16 +48,16 @@ const FigurinhasIdRoute = FigurinhasIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const FigurinhasIdEditarRoute = FigurinhasIdEditarRouteImport.update({
-  id: '/editar',
-  path: '/editar',
-  getParentRoute: () => FigurinhasIdRoute,
+  id: '/figurinhas/$id_/editar',
+  path: '/figurinhas/$id/editar',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/album': typeof AlbumRoute
   '/pacote': typeof PacoteRoute
-  '/figurinhas/$id': typeof FigurinhasIdRouteWithChildren
+  '/figurinhas/$id': typeof FigurinhasIdRoute
   '/figurinhas/nova': typeof FigurinhasNovaRoute
   '/figurinhas/': typeof FigurinhasIndexRoute
   '/figurinhas/$id/editar': typeof FigurinhasIdEditarRoute
@@ -66,7 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/album': typeof AlbumRoute
   '/pacote': typeof PacoteRoute
-  '/figurinhas/$id': typeof FigurinhasIdRouteWithChildren
+  '/figurinhas/$id': typeof FigurinhasIdRoute
   '/figurinhas/nova': typeof FigurinhasNovaRoute
   '/figurinhas': typeof FigurinhasIndexRoute
   '/figurinhas/$id/editar': typeof FigurinhasIdEditarRoute
@@ -76,10 +76,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/album': typeof AlbumRoute
   '/pacote': typeof PacoteRoute
-  '/figurinhas/$id': typeof FigurinhasIdRouteWithChildren
+  '/figurinhas/$id': typeof FigurinhasIdRoute
   '/figurinhas/nova': typeof FigurinhasNovaRoute
   '/figurinhas/': typeof FigurinhasIndexRoute
-  '/figurinhas/$id/editar': typeof FigurinhasIdEditarRoute
+  '/figurinhas/$id_/editar': typeof FigurinhasIdEditarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -108,16 +108,17 @@ export interface FileRouteTypes {
     | '/figurinhas/$id'
     | '/figurinhas/nova'
     | '/figurinhas/'
-    | '/figurinhas/$id/editar'
+    | '/figurinhas/$id_/editar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlbumRoute: typeof AlbumRoute
   PacoteRoute: typeof PacoteRoute
-  FigurinhasIdRoute: typeof FigurinhasIdRouteWithChildren
+  FigurinhasIdRoute: typeof FigurinhasIdRoute
   FigurinhasNovaRoute: typeof FigurinhasNovaRoute
   FigurinhasIndexRoute: typeof FigurinhasIndexRoute
+  FigurinhasIdEditarRoute: typeof FigurinhasIdEditarRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -164,35 +165,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FigurinhasIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/figurinhas/$id/editar': {
-      id: '/figurinhas/$id/editar'
-      path: '/editar'
+    '/figurinhas/$id_/editar': {
+      id: '/figurinhas/$id_/editar'
+      path: '/figurinhas/$id/editar'
       fullPath: '/figurinhas/$id/editar'
       preLoaderRoute: typeof FigurinhasIdEditarRouteImport
-      parentRoute: typeof FigurinhasIdRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface FigurinhasIdRouteChildren {
-  FigurinhasIdEditarRoute: typeof FigurinhasIdEditarRoute
-}
-
-const FigurinhasIdRouteChildren: FigurinhasIdRouteChildren = {
-  FigurinhasIdEditarRoute: FigurinhasIdEditarRoute,
-}
-
-const FigurinhasIdRouteWithChildren = FigurinhasIdRoute._addFileChildren(
-  FigurinhasIdRouteChildren,
-)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlbumRoute: AlbumRoute,
   PacoteRoute: PacoteRoute,
-  FigurinhasIdRoute: FigurinhasIdRouteWithChildren,
+  FigurinhasIdRoute: FigurinhasIdRoute,
   FigurinhasNovaRoute: FigurinhasNovaRoute,
   FigurinhasIndexRoute: FigurinhasIndexRoute,
+  FigurinhasIdEditarRoute: FigurinhasIdEditarRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

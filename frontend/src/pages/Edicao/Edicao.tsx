@@ -5,17 +5,18 @@ import {
   getFigurinhaPorId,
 } from "../../services/api"; // Importe seus métodos de API aqui
 import { useState, useEffect, FormEvent } from "react";
-import { getRouteApi } from "@tanstack/react-router";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import styles from "./Edicao.module.css";
 import { CriarFigurinhaPayload } from "../../types";
 
-const routeApi = getRouteApi("/figurinhas/$id/editar");
+const routeApi = getRouteApi("/figurinhas/$id_/editar");
 
 // 1. Declare o routeApi APENAS UMA VEZ e fora do componente.
 // O ponto de interrogação ($id?) diz ao roteador que o ID não é obrigatório (serve para cadastro).
 
 export default function Editar() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   // 2. Capture o ID usando a API configurada acima
   const { id } = routeApi.useParams();
@@ -58,6 +59,7 @@ const mutationAdicionar = useMutation<unknown, Error, CriarFigurinhaPayload>({
       queryClient.invalidateQueries({ queryKey: ["figurinhas"] });
       limparFormulario();
       alert("Figurinha cadastrada com sucesso!");
+      navigate({ to: "/figurinhas" });
     },
   });
 
@@ -69,6 +71,7 @@ const mutationEditar = useMutation<unknown, Error, Partial<CriarFigurinhaPayload
       queryClient.invalidateQueries({ queryKey: ["figurinhas"] });
       queryClient.invalidateQueries({ queryKey: ["figurinha", id] });
       alert("Figurinha atualizada com sucesso!");
+      navigate({ to: "/figurinhas" });
     },
   });
 

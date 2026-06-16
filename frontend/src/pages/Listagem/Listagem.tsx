@@ -24,7 +24,9 @@ import { Row } from "@tanstack/react-table";
 import { Figurinha } from "../../types";
 
 export default function Listagem() {
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "id", desc: false },
+  ]);
   const [categoria, setCategoria] = useState("");
   const [raridade, setRaridade] = useState("");
   const [categoriaTemp, setCategoriaTemp] = useState("");
@@ -74,12 +76,18 @@ export default function Listagem() {
               to="/figurinhas/$id/editar"
               params={{ id: row.original.id }}
               className={styles.btnEditar}
+              onClick={(e) => e.stopPropagation()}
             >
               Editar
             </Link>
             <button
               disabled={mutationApagarDoCatalogo.isPending}
-              onClick={() => mutationApagarDoCatalogo.mutate(row.original.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (window.confirm(`Tem certeza que deseja remover a figurinha ${row.original.nome}?`)) {
+                  mutationApagarDoCatalogo.mutate(row.original.id);
+                }
+              }}
               className={styles.btnRemover}
             >
               Remover
