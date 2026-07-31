@@ -1,22 +1,29 @@
-  // Visit https://aka.ms/tsconfig to read more about this file
 {
   "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "target": "esnext",
-    "lib": ["esnext"],
-    "types": ["node"],
-    "sourceMap": true,
-    "declaration": true,
+    "lib": [
+      "ESNext"
+    ],
+    "module": "commonjs",
+    "target": "ESNext",
+    "outDir": "build",
     "strict": true,
-    "noImplicitAny": true,
-    "skipLibCheck": true,
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "moduleDetection": "force"
+    "types": [
+      "node",
+      "jest"
+    ],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictPropertyInitialization": false,
+    "noUnusedLocals": true,
+    "esModuleInterop": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*.ts",
+    "__tests__/**/*.ts",
+    "jest.setup.ts"
+  ],
+  "ts-node": {
+    "transpileOnly": true
+  }
 }

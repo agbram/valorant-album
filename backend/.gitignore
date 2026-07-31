@@ -6,3 +6,7 @@
 /src/generated/prisma
 
 /src/generated/prisma
+
+.gitmodules
+
+/coverage
