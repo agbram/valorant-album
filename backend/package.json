@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/main/server.ts",
-    "seed": "npx tsx src/db/seed.ts",
+    "seed": "tsx src/main/seed.ts",
     "test": "jest --config jest.config.cjs",
     "build": "tsc",
     "migrate": "node-pg-migrate"
