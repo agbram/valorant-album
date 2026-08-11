@@ -43,8 +43,11 @@ export class Card {
       ...props,
       updatedAt: now,
     };
+    console.log(this.props);  
+    console.log(this.update);  
     return this;
   }
+  
 
   public static clone(card: Card): Card {
     return new Card({ ...card.props });

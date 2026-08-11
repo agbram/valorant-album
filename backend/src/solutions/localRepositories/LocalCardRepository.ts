@@ -21,8 +21,44 @@ export class LocalCardRepository implements ICardRepository {
       return left(
         new ConnectionError(
           "Card Repository",
-          error instanceof Error ? error.message : "Unknown error"
-        )
+          error instanceof Error ? error.message : "Unknown error",
+        ),
+      );
+    }
+  }
+
+  async changeQuantity(
+    id: string,
+    quantidade: number,
+  ): ErrorProneResponse<null> {
+    try {
+      const existing = this.cards.get(id);
+      if (!existing) return right(null);
+      this.cards.set(
+        id,
+        Card.clone(existing).update({ quantidade: quantidade }, new Date()),
+      );
+      return right(null);
+    } catch (error) {
+      return left(
+        new ConnectionError(
+          "Card Repository",
+          error instanceof Error ? error.message : "Unknown error",
+        ),
+      );
+    }
+  }
+
+  async findByNome(nome: string): ErrorProneResponse<Card | null> {
+    try {
+      const card = this.cards.get(nome) || null;
+      return right(card && Card.clone(card));
+    } catch (error) {
+      return left(
+        new ConnectionError(
+          "Card Repository",
+          error instanceof Error ? error.message : "Unknown error",
+        ),
       );
     }
   }
@@ -35,24 +71,24 @@ export class LocalCardRepository implements ICardRepository {
       return left(
         new ConnectionError(
           "Card Repository",
-          error instanceof Error ? error.message : "Unknown error"
-        )
+          error instanceof Error ? error.message : "Unknown error",
+        ),
       );
     }
   }
 
   async findByNumero(numero: number): ErrorProneResponse<Card | null> {
-     try {
-        const card = this.cards.get(numero) || null;
-        return right(card && Card.clone(card))
-     } catch (error){
-        return left(
-            new ConnectionError(
-                "Card Repository",
-                error instanceof Error ? error.message : "Unknow error"
-            )
-        )
-     }
+    try {
+      const card = this.cards.get(numero) || null;
+      return right(card && Card.clone(card));
+    } catch (error) {
+      return left(
+        new ConnectionError(
+          "Card Repository",
+          error instanceof Error ? error.message : "Unknow error",
+        ),
+      );
+    }
   }
 
   async findAll(): ErrorProneResponse<Card[]> {
@@ -62,8 +98,8 @@ export class LocalCardRepository implements ICardRepository {
       return left(
         new ConnectionError(
           "Card Repository",
-          error instanceof Error ? error.message : "Unknown error"
-        )
+          error instanceof Error ? error.message : "Unknown error",
+        ),
       );
     }
   }
@@ -78,8 +114,8 @@ export class LocalCardRepository implements ICardRepository {
       return left(
         new ConnectionError(
           "Card Repository",
-          error instanceof Error ? error.message : "Unknown error"
-        )
+          error instanceof Error ? error.message : "Unknown error",
+        ),
       );
     }
   }
@@ -92,8 +128,8 @@ export class LocalCardRepository implements ICardRepository {
       return left(
         new ConnectionError(
           "Card Repository",
-          error instanceof Error ? error.message : "Unknown error"
-        )
+          error instanceof Error ? error.message : "Unknown error",
+        ),
       );
     }
   }
@@ -105,8 +141,8 @@ export class LocalCardRepository implements ICardRepository {
       return left(
         new ConnectionError(
           "Card Repository",
-          error instanceof Error ? error.message : "Unknown error"
-        )
+          error instanceof Error ? error.message : "Unknown error",
+        ),
       );
     }
   }

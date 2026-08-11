@@ -1,3 +1,4 @@
+import { z } from 'zod'
 import { left, right } from '../../../shared/Either'
 import { ListCardsUseCase } from '../../../useCases/ListCardsUseCase'
 import { HttpRequest } from '../contracts/Http'
@@ -6,18 +7,18 @@ import {
   IHttpControllerOperation
 } from '../contracts/IHttpControllerOperation'
 import { success } from '../helpers/ResponseHandler'
-import { ZodHttpValidator } from '../validators'
+import { ListCardsQuerySchema, ZodHttpValidator } from '../validators'
 import { CardViewModel } from '../viewModels'
 import { CardViewModelMapper } from '../viewModels/CardViewModelMapper'
 import { validateRequest } from './decorators/ValidateRequest'
 
-type ListCardsRequest = HttpRequest<any, any, any>
 type ListCardsResponse = HttpControllerOperationResponse<CardViewModel[]>
+type ListCardsRequest = HttpRequest<any, z.infer<typeof ListCardsQuerySchema>, any>
 
 export class ListCardsOperation implements IHttpControllerOperation<ListCardsRequest> {
   constructor(private listCardsUseCase: ListCardsUseCase) {}
 
-  @validateRequest(new ZodHttpValidator(undefined, undefined, undefined))
+@validateRequest(new ZodHttpValidator(undefined, ListCardsQuerySchema, undefined))
   async operate(request: ListCardsRequest): ListCardsResponse {
     const additionalFieldsToLog = {
       method: request.method,
@@ -25,7 +26,7 @@ export class ListCardsOperation implements IHttpControllerOperation<ListCardsReq
     }
 
     const result = await this.listCardsUseCase.execute(
-      {},
+      {filters: request.query},
       {additionalFieldsToLog }
     )
 

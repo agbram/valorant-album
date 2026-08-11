@@ -40,18 +40,18 @@ export class PatchQuantityUseCase implements IUseCase<PatchQuantityUseCaseProps,
     const existingCard = existingCardResult.value; 
     const currentTime = now || new Date(); 
 
-    const newCard = Card.clone(existingCard).update(updates, currentTime); 
+    const newValue = Card.clone(existingCard).update(updates, currentTime); 
 
-    const diff = CompareObjs.difference(existingCard.props, newCard.props); 
+    const diff = CompareObjs.difference(existingCard.props, newValue.props); 
 
-    const updateResult = await this.cardRepository.update( 
+    const updateResult = await this.cardRepository.changeQuantity( 
       cardId, 
-      newCard 
+      newValue.quantidade
     ); 
     if (updateResult.isLeft()) { 
       return left(updateResult.value); 
     } 
 
-    return right({ card: newCard, diff }); 
+    return right({ card: newValue, diff }); 
   } 
 }

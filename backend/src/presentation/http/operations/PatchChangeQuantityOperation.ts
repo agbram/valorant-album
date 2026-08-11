@@ -1,6 +1,6 @@
 import { left, right } from '../../../shared/Either'
 import { ILogger } from '../../../useCases/contracts'
-import { PatchQuantityUseCase } from '../../../useCases/PatchQuantityUseCase'
+import { PatchQuantityUseCase } from '../../../useCases/PatchChangeQuantityUseCase'
 import { HttpRequest } from '../contracts/Http'
 import {
   HttpControllerOperationResponse,

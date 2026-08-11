@@ -54,10 +54,20 @@ export const getCardParamsSchema = z.object({
 
 export const PatchQuantitySchema = z.object({ 
   quantidade: quantityCardSchema
-}) 
+})
+
+export const numeroQuerySchema = z.coerce.number().int().positive()
+
+export const ListCardsQuerySchema = z.object({
+  nome: cardFieldSchema.optional(),
+  raridade: raridadeSchema.optional(),
+  numero: numeroQuerySchema.optional(),
+  status: z.enum(["adquirida", "faltando", "repetida"]).optional()
+})
 
 export type CreateCardRequestSchema = z.infer<typeof createCardRequestSchema>
 export type UpdateCardRequestSchema = z.infer<typeof updateCardRequestSchema>
 export type GetCardParamsSchema = z.infer<typeof getCardParamsSchema>
 export type QuantityCardSchema = z.infer<typeof quantityCardSchema>
 export type PatchQuantitySchema = z.infer<typeof PatchQuantitySchema>
+export type ListCardsQuerySchemaType = z.infer<typeof ListCardsQuerySchema>
