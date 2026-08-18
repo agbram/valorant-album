@@ -1,0 +1,11 @@
+[submodule "backend/src/shared/errors"]
+	path = backend/src/shared/errors
+	url = git@github.com:Visio-ai/errors.git
+	branch = master
+[submodule "backend/src/solutions/winston/logs"]
+	path = backend/src/solutions/winston/logs
+	url = git@github.com:Visio-ai/clean-winston.git
+	branch = main
+[submodule "backend/src/main/middleware/auth"]
+	path = backend/src/main/middleware/auth
+	url = git@github.com:Visio-ai/auth_utils.git
